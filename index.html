@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Un regalo especial ❤️</title>
+  <style>
+    :root {
+      --bg-1: #ff9a9e;
+      --bg-2: #fecfef;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text-main: #4a0e17;
+      --accent: #ff4b5c;
+      --accent-hover: #e03a4b;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    /* TARJETA PRINCIPAL */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 40px 30px;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(255, 75, 92, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      position: relative;
+      z-index: 2;
+    }
+
+    .icon-top {
+      font-size: 55px;
+      margin-bottom: 10px;
+      display: inline-block;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    h1 {
+      font-size: 26px;
+      margin: 10px 0;
+      color: #b81d43;
+    }
+
+    p.subtitle {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    /* PANTALLA DE CÓDIGO */
+    .code-input-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .code-input-container input {
+      width: 50px;
+      height: 60px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      border: 2px solid #fca5a5;
+      border-radius: 12px;
+      outline: none;
+      background-color: #fff;
+      color: #b81d43;
+    }
+
+    .code-input-container input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 75, 92, 0.3);
+    }
+
+    button.btn-unlock {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 5px 15px rgba(255, 75, 92, 0.4);
+    }
+
+    button.btn-unlock:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    .error-msg {
+      color: #e11d48;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* CONTENIDO REVELADO DE LA CARTA */
+    #surpriseContent {
+      display: none;
+      animation: fadeIn 1.2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .letter-body {
+      text-align: left;
+      line-height: 1.7;
+      font-size: 15px;
+      background: rgba(255, 241, 242, 0.7);
+      padding: 22px;
+      border-radius: 16px;
+      border-left: 4px solid var(--accent);
+      margin-top: 15px;
+    }
+
+    .letter-body p {
+      margin-bottom: 14px;
+    }
+
+    .letter-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* LLUVIA DE CORAZONES EN PANTALLA */
+    .floating-heart {
+      position: fixed;
+      top: -10vh;
+      font-size: 22px;
+      user-select: none;
+      pointer-events: none;
+      animation: fall 5s linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(105vh) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    
+    <!-- PANTALLA 1: PEDIR CÓDIGO -->
+    <div id="lockScreen">
+      <div class="icon-top">🔒</div>
+      <h1>Un mensaje especial para ti</h1>
+      <p class="subtitle">Ingresa nuestra clave secreta de 4 dígitos para desbloquear tu sorpresa:</p>
+
+      <form id="codeForm" onsubmit="event.preventDefault(); verifyCode();">
+        <div class="code-input-container">
+          <input type="password" id="digit1" maxlength="1" inputmode="numeric" autofocus oninput="moveFocus(1)">
+          <input type="password" id="digit2" maxlength="1" inputmode="numeric" oninput="moveFocus(2)">
+          <input type="password" id="digit3" maxlength="1" inputmode="numeric" oninput="moveFocus(3)">
+          <input type="password" id="digit4" maxlength="1" inputmode="numeric" oninput="moveFocus(4)">
+        </div>
+
+        <button type="submit" class="btn-unlock">Desbloquear ❤️</button>
+      </form>
+
+      <div id="errorMsg" class="error-msg">Código incorrecto. ¡Sé que te acuerdas de la fecha especial! 😉</div>
+    </div>
+
+    <!-- PANTALLA 2: MENSAJE DE AMOR (REVELADO CON 2407) -->
+    <div id="surpriseContent">
+      <div class="icon-top">💖</div>
+      <h1>¡Felices 3 Meses, mi amor!</h1>
+      <p class="subtitle">24 / 07 — Nuestro día especial ✨</p>
+
+      <div class="letter-body">
+        <p><strong>Para la chica más maravillosa:</strong></p>
+        
+        <p>Te amo muchísimo. Hoy cumplimos 3 meses juntos y quería recordarte lo valiosa e importante que eres en mi vida.</p>
+
+        <p>Quiero que siempre recuerdes que confío en ti y en todo tu potencial. Siempre estaré increíblemente orgulloso de cada uno de los logros que te propones y alcanzas, porque sé de lo que eres capaz y lo mucho que vales. ¡Sé que tú puedes con todo lo que te propongas!</p>
+
+        <p>Gracias por estos 3 meses tan bonitos a tu lado. Vamos por muchos momentos más juntos.</p>
+
+        <p style="text-align: right; font-weight: bold; color: #b81d43; margin-top: 20px;">
+          — Siempre tuyo, Alexander ❤️
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Mover el cursor automáticamente entre los 4 cajones
+    function moveFocus(index) {
+      const currentInput = document.getElementById('digit' + index);
+      if (currentInput.value.length === 1 && index < 4) {
+        document.getElementById('digit' + (index + 1)).focus();
+      }
+      
+      // Si llena el último casilla, intentar verificar automáticamente
+      if (index === 4 && currentInput.value.length === 1) {
+        verifyCode();
+      }
+    }
+
+    // Verificar el código 2407
+    function verifyCode() {
+      const d1 = document.getElementById('digit1').value;
+      const d2 = document.getElementById('digit2').value;
+      const d3 = document.getElementById('digit3').value;
+      const d4 = document.getElementById('digit4').value;
+
+      const codeEntered = d1 + d2 + d3 + d4;
+
+      if (codeEntered === '2407') {
+        // Ocultar pantalla de bloqueo y mostrar carta
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('surpriseContent').style.display = 'block';
+
+        // Lluvia de corazones
+        startHeartRain();
+      } else {
+        // Mostrar mensaje de error y limpiar campos
+        const error = document.getElementById('errorMsg');
+        error.style.display = 'block';
+        
+        document.getElementById('digit1').value = '';
+        document.getElementById('digit2').value = '';
+        document.getElementById('digit3').value = '';
+        document.getElementById('digit4').value = '';
+        document.getElementById('digit1').focus();
+      }
+    }
+
+    // Animación de lluvia de corazones
+    function startHeartRain() {
+      for (let i = 0; i < 35; i++) {
+        setTimeout(createHeart, i * 140);
+      }
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('floating-heart');
+      
+      const hearts = ['❤️', '💖', '💕', '✨', '🌸', '💘'];
+      heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+      
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = Math.random() * 3 + 2.5 + 's';
+      heart.style.fontSize = Math.random() * 16 + 16 + 'px';
+      
+      document.body.appendChild(heart);
+      
+      setTimeout(() => {
+        heart.remove();
+      }, 5000);
+    }
+  </script>
+
+</body>
+</html>
